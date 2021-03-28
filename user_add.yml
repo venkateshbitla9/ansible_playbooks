@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  become: true
+  become_method: sudo
+
+  vars_prompt:
+    - name: user
+      prompt: Enter the username?
+      private: no
+
+    - name: password
+      prompt: Enter the password?
+      private: yes
+      #    user: "{{user}}"
+      #    password: "{{password}}"
+
+  tasks:
+   - name: Add the user along with password
+     user:
+       name: "{{user}}"
+       state: present
+       password: "{{ password | password_hash('sha512') }}"
+
+   - name: Ask user to change password on first login 
+     shell: chage -d 0 "{{ user }}"

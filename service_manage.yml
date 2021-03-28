@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+  become: true
+  become_method: sudo
+  tasks:
+     - name: Check the service status
+       ignore_errors: true
+       shell: service ufw status
+       register: status
+  
+     - name: Restart the service
+       service:
+        name: ufw
+        state: restarted
+       when: status.rc != 0
